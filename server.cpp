@@ -26,7 +26,7 @@ int main(int argc, char* argv[]) {
 
     if (server < 0) 
     {
-        std::cout << "Error establishing socket...\n";
+        std::cout << "Error establishing socket....\n";
         exit(1);
     }
 
