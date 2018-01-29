@@ -17,7 +17,7 @@ int main(int argc, char* argv[]) {
     if(argc > 1) 
         portNum = atoi(argv[1]);
     else
-        portNum = 150010;
+        portNum = 15000;
 
     struct sockaddr_in server_addr;
     socklen_t sizeServerAddress;
