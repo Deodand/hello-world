@@ -7,7 +7,6 @@
 #include <stdlib.h>
 #include <unistd.h>
 
-
 int main(int argc, char* argv[]) {
     int client, server, clientNumber = 0;
     int portNum;
@@ -26,7 +25,7 @@ int main(int argc, char* argv[]) {
 
     if (server < 0) 
     {
-        std::cout << "Error establishing socket..!11!..\n";
+        std::cerr << "Error establishing socket..!11!..\n";
         exit(1);
     }
 
