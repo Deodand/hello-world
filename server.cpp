@@ -6,13 +6,32 @@
 #include <arpa/inet.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include <pthread.h>
+
+void *threadFunc(void *val1) {
+    int locVal1 = * (int *) val1;
+    for(int i=0; i<10; ++i) {
+        std::cout << locVal1 << std::endl;
+        //++locVal1;
+    }
+}
 
 int main(int argc, char* argv[]) {
-    int client, server, clientNumber = 0;
+    int client1, client2, server, clientNumber = 0;
     int portNum;
     int bufsize = 1024;
     char buffer[bufsize];
     int optval = 1;
+
+    /*pthread_t threadId1, threadId2;
+    int value1 = 1;
+    int value2 = 2;
+
+    pthread_create(&threadId1, NULL, threadFunc, &value1);
+    pthread_create(&threadId2, NULL, threadFunc, &value2);
+
+    pthread_join(threadId1, NULL);
+    pthread_join(threadId2, NULL);*/
 
     if(argc > 1) 
         portNum = atoi(argv[1]);
@@ -51,28 +70,40 @@ int main(int argc, char* argv[]) {
 
 
     while(1) {
-        std::cout << "Waiting clients...\n";
-        ++clientNumber;
         listen(server, 10);
+        std::cout << "Waiting clients...\n";
 
-        client = accept(server,(struct sockaddr *)&server_addr, &sizeServerAddress);
-
-        if (client < 0) {
+        client1 = accept(server,(struct sockaddr *)&server_addr, &sizeServerAddress);
+        if (client1 < 0) {
             std::cerr << "Error accepting client " << clientNumber << "...\n";
             return -1;
         }
-        else
+        else {
+            ++clientNumber;
             std::cout << "Client " << clientNumber << " has been connected.\n";
+        }
 
-
-        read(client, buffer, bufsize);
+        read(client1, buffer, bufsize);
         std::cout << "Client message: " << buffer << std::endl;
-        strcpy(buffer, "Your message accepted");
-        write(client, buffer, bufsize);
+        write(client1, "Your message accepted!", sizeof("Your message accepted!"));
+
+        client2 = accept(server,(struct sockaddr *)&server_addr, &sizeServerAddress);
+        if (client2 < 0) {
+            std::cerr << "Error accepting client " << clientNumber << "...\n";
+            return -1;
+        }
+        else {
+            ++clientNumber;
+            std::cout << "Client " << clientNumber << " has been connected.\n";
+        }
+
+        //strcpy(buffer, "Your message accepted");
+        write(client2, buffer, bufsize);
 
         std::cout << "Server message has been sended.\n\n";
         
-        close(client);
+        close(client1);
+        close(client2);
     }
 
     std::cout << "Closing server...\n";
