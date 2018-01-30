@@ -26,7 +26,7 @@ int main(int argc, char* argv[]) {
 
     if (client < 0) 
     {
-        std::cout << "Error establishing socket...\n" ;
+        std::cerr << "Error establishing socket...\n" ;
         exit(1);
     }
 
@@ -38,7 +38,7 @@ int main(int argc, char* argv[]) {
     if (connect(client,(struct sockaddr *)&server_addr, sizeof(server_addr)) == 0)
         std::cout << "Connection to the server port number: " << portNum << std::endl;
     else {
-        std::cout << "Connection to the server port number: " << portNum << " was failed.\n";
+        std::cerr << "Connection to the server port number: " << portNum << " was failed.\n";
         return -1;
     }
 
