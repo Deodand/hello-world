@@ -13,6 +13,7 @@ int main(int argc, char* argv[]) {
     int portNum;
     int bufsize = 1024;
     char buffer[bufsize];
+    int optval = 1;
 
     if(argc > 1) 
         portNum = atoi(argv[1]);
@@ -36,6 +37,8 @@ int main(int argc, char* argv[]) {
     server_addr.sin_family = AF_INET;
     server_addr.sin_addr.s_addr = htons(INADDR_ANY);
     server_addr.sin_port = htons(portNum);
+
+    setsockopt(server, SOL_SOCKET, SO_REUSEADDR, &optval, sizeof(optval));
 
     std::cout << "Binding server...\n";
 
