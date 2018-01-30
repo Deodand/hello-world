@@ -51,7 +51,7 @@ int main(int argc, char* argv[]) {
     while(1) {
         std::cout << "Waiting clients...\n";
         ++clientNumber;
-        listen(server, 5);
+        listen(server, 10);
 
         client = accept(server,(struct sockaddr *)&server_addr, &sizeServerAddress);
 
