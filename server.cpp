@@ -7,7 +7,6 @@
 #include <stdlib.h>
 #include <unistd.h>
 
-
 int main(int argc, char* argv[]) {
     int client, server, clientNumber = 0;
     int portNum;
