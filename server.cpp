@@ -26,7 +26,7 @@ int main(int argc, char* argv[]) {
 
     if (server < 0) 
     {
-        std::cout << "Error establishing socket..!11!..\n";
+        std::cerr << "Error establishing socket..!11!..\n";
         exit(1);
     }
 
@@ -41,7 +41,7 @@ int main(int argc, char* argv[]) {
 
     if ((bind(server, (struct sockaddr*)&server_addr,sizeof(server_addr))) < 0) 
     {
-        std::cout << "Error binding connection...\n";
+        std::cerr << "Error binding connection...\n";
         return -1;
     }
 
@@ -56,7 +56,7 @@ int main(int argc, char* argv[]) {
         client = accept(server,(struct sockaddr *)&server_addr, &sizeServerAddress);
 
         if (client < 0) {
-            std::cout << "Error accepting client " << clientNumber << "...\n";
+            std::cerr << "Error accepting client " << clientNumber << "...\n";
             return -1;
         }
         else
