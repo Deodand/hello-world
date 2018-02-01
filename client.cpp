@@ -42,13 +42,34 @@ int main(int argc, char* argv[]) {
         return -1;
     }
 
-    std::cout << "Your message: ";
-    std::cin >> buffer;
-    write(client, buffer, sizeof(buffer));
-    std::cout << "Sended message: " << buffer << '\n';
 
     read(client, buffer, bufsize);
-    std::cout << "Server message: " << buffer << std::endl;
+    std::cout << "Server: " << buffer << '\n';
+    read(client, buffer, 2);  //who is first start talking?
+    
+    char yourPosition = buffer[0];
+    std::cout << "My position is - " << yourPosition << '\n';
+    while(1) {
+        if(yourPosition == 'f') {
+            std::cout << "You: ";
+            std::cin >> buffer;
+            write(client, buffer, sizeof(buffer));
+            read(client, buffer, bufsize);
+            std::cout << "Client2: " << buffer << '\n';
+        }
+        else if(yourPosition == 's') {
+            std::cout << "Client1: ";
+            read(client, buffer, bufsize);
+            std::cout << buffer << '\n';
+            std::cout << "You: ";
+            std::cin >> buffer;
+            write(client, buffer, sizeof(buffer));
+        }
+        else {
+            std::cout << "Error: bad position.\n";
+            exit(1);
+        }
+    }
 
     close(client);
     return 0;
