@@ -69,7 +69,6 @@ int main(int argc, char* argv[]) {
     sizeServerAddress = sizeof(server_addr);
 
 
-    while(1) {
         listen(server, 10);
         std::cout << "Waiting clients...\n";
 
@@ -83,9 +82,9 @@ int main(int argc, char* argv[]) {
             std::cout << "Client " << clientNumber << " has been connected.\n";
         }
 
-        read(client1, buffer, bufsize);
-        std::cout << "Client message: " << buffer << std::endl;
-        write(client1, "Your message accepted!", sizeof("Your message accepted!"));
+        write(client1, "You has been connected to server. Server is waiting your partner...",
+            sizeof("You has been connected to server. Server is waiting your partner..."));
+
 
         client2 = accept(server,(struct sockaddr *)&server_addr, &sizeServerAddress);
         if (client2 < 0) {
@@ -98,13 +97,29 @@ int main(int argc, char* argv[]) {
         }
 
         //strcpy(buffer, "Your message accepted");
-        write(client2, buffer, bufsize);
+        write(client2, "You has been connected to server. Waiting message from client1...",
+            sizeof("You has been connected to server. Waiting message from client1..."));
+        int temp;
+        if((temp = write(client1, "f", sizeof("f"))) < 1) 
+            std::cerr << "Error: write client1 'f'\n";
+        else
+            std::cout << "Count of bytes was written to client1:" << temp << '\n';
+        if((temp = write(client2, "s", sizeof("s"))) < 1) 
+            std::cerr << "Error: write client2 's'\n";
+        else
+            std::cout << "Count of bytes was written to client2:" << temp << '\n';
 
-        std::cout << "Server message has been sended.\n\n";
+        while(1) {
+            read(client1, buffer, bufsize);
+            write(client2, buffer, sizeof(buffer));
+            read(client2, buffer, bufsize);
+            write(client1, buffer, sizeof(buffer));
+        }
+        
         
         close(client1);
         close(client2);
-    }
+
 
     std::cout << "Closing server...\n";
     close(server);
