@@ -61,7 +61,7 @@ int main(int argc, char* argv[]) {
     // creating set of descriptors
     fd_set master;      // set of descriptors
     fd_set fdRead;
-    int fdMax;          // max number of descriptors
+    int fdMax;          // max number of descriptors 
     FD_ZERO(&master);
     FD_ZERO(&fdRead);
 
