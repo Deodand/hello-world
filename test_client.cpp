@@ -48,7 +48,7 @@ int main(int argc, char* argv[]) {
         return -1;
     }
     /*
-    std::cout << "Your message: ";
+    std::cout << "Your message: "; 
     std::cin >> buffer;
     write(client, buffer, sizeof(buffer));
     std::cout << "Sended message: " << buffer << '\n';
