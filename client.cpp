@@ -8,10 +8,44 @@
 #include <unistd.h>
 #include <netdb.h>
 #include <string>
+#include <thread>
+
+void reading(int client) {
+    int bufSize = 1024;
+    char buffer[bufSize];
+    while(1) {
+        memset(buffer, 0, sizeof(buffer));
+        if((bufSize = read(client, buffer, 1024)) < 0) {
+            std::cerr << "Error: read()\n";
+        }
+        else if(bufSize == 0) {
+            std::cout << "Server is closed\n";
+            break;
+        }
+        else {
+            std::cout << buffer << '\n';
+        }
+    }
+}
+void writing(int client) {
+    int bufSize = 1024;
+    char buffer[bufSize];
+    while(1) {
+        memset(buffer, 0, sizeof(buffer));
+        if((bufSize = read(STDIN_FILENO, buffer, 1024)) <= 0)
+        {
+            std::cerr << "Error: read from STRIN\n";
+            break;
+        }
+        if((write(client, buffer, bufSize-1)) < 0)
+        {
+            std::cerr << "Error: read()\n";
+        }
+    }
+}
 
 
 int main(int argc, char* argv[]) {
-    int client;
     int portNum;
     int bufSize = 1024;
     char buffer[bufSize];
@@ -22,10 +56,8 @@ int main(int argc, char* argv[]) {
     else
         portNum = 15000;
 
-    struct sockaddr_in server_addr;
 
-    client = socket(AF_INET, SOCK_STREAM, 0);
-
+    int client = socket(AF_INET, SOCK_STREAM, 0);
     if (client < 0) 
     {
         std::cerr << "Error establishing socket...\n" ;
@@ -33,9 +65,11 @@ int main(int argc, char* argv[]) {
     }
 
     std::cout << "Socket client has been created.\n" ;
-    
+
+    struct sockaddr_in server_addr;
     server_addr.sin_family = AF_INET;
     server_addr.sin_port = htons(portNum);
+    server_addr.sin_addr.s_addr = INADDR_ANY;
 
     if (connect(client,(struct sockaddr *)&server_addr, sizeof(server_addr)) == 0)
         std::cout << "Connection to the server port number: " 
@@ -43,7 +77,7 @@ int main(int argc, char* argv[]) {
     else {
         std::cerr << "Connection to the server port number: " 
                   << portNum << " was failed.\n";
-        return -1;
+        exit(2);
     }
 
     // send to server your nickname
@@ -53,8 +87,15 @@ int main(int argc, char* argv[]) {
         std::cerr << "Error write()";
     buf.clear();
 
+    // working with threads
+    std::thread readThread(reading, client);
+    std::thread writeThread(writing, client);
+
+    readThread.join();
+    writeThread.join();
+
     // creating set of descriptors
-    fd_set fdClient;
+    /*fd_set fdClient;
     fd_set fdRead;
     int fdMax = client;
     FD_ZERO(&fdClient);
@@ -96,8 +137,8 @@ int main(int argc, char* argv[]) {
                 std::cout << buffer << '\n';
             }
         }
-    }
-
+    }*/
+    
 
     close(client);
     return 0;

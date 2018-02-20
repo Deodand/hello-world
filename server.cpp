@@ -7,6 +7,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <pthread.h>
+#include <fcntl.h>
 
 
 int main(int argc, char* argv[]) {
@@ -36,8 +37,8 @@ int main(int argc, char* argv[]) {
 
 
     server_addr.sin_family = AF_INET;
-    server_addr.sin_addr.s_addr = htons(INADDR_ANY);
     server_addr.sin_port = htons(portNum);
+    server_addr.sin_addr.s_addr = htons(INADDR_ANY);
 
     // fix trouble "port already in use"
     int optval = 1;
@@ -65,6 +66,9 @@ int main(int argc, char* argv[]) {
     FD_ZERO(&master);
     FD_ZERO(&fdRead);
 
+    int flags = fcntl(server, F_GETFL, 0);
+    fcntl(server, F_SETFL, flags | O_NONBLOCK);
+
     // add server descriptor to master set of descriptors
     FD_SET(server, &master); 
     fdMax = server;
@@ -85,10 +89,15 @@ int main(int argc, char* argv[]) {
                     client = accept(server, 
                                     (struct sockaddr*)&server_addr,
                                     &sizeServerAddress);
+
+
                     if(client < 0) 
                         std::cerr << "Error accept()";
                     else {
-                        read(client, buffer, 1024);
+                        if(read(client, buffer, 1024) == -1) {
+                            std::cerr << "Error: read()\n";
+                            continue;
+                        }
                         nicknames[client] = buffer;
                         
                         FD_SET(client, &master);
