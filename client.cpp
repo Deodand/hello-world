@@ -94,51 +94,6 @@ int main(int argc, char* argv[]) {
     readThread.join();
     writeThread.join();
 
-    // creating set of descriptors
-    /*fd_set fdClient;
-    fd_set fdRead;
-    int fdMax = client;
-    FD_ZERO(&fdClient);
-    FD_ZERO(&fdRead);
-    FD_SET(client, &fdClient);
-    FD_SET(STDIN_FILENO, &fdClient);
-
-    while(1) {
-        fdRead = fdClient;
-        if(select(fdMax+1, &fdRead, NULL, NULL, NULL) < 0) {
-            std::cerr << "error select()";
-            exit(4);
-        }
-
-        if (FD_ISSET(STDIN_FILENO, &fdRead)) {
-            // client have message, you need to send it to server
-            memset(buffer, 0, sizeof(buffer));
-            if((bufSize = read(STDIN_FILENO, buffer, 1024)) <= 0) {
-                std::cerr << "Error read()";
-                exit(5);
-            }
-            if(write(client, buffer, bufSize-1) < 0) {
-                std::cerr << "Error write()";
-                exit(6);
-            }
-        }
-
-        if (FD_ISSET(client, &fdRead)) {
-            if((bufSize = read(client, buffer, 1024)) < 0) {
-                std::cerr << "Error read()";
-            }
-            else if(bufSize == 0) {
-                // server is offline now
-                std::cout << "Server is offline now\n";
-                return 0;
-            }
-            else {
-                // we have a message from server
-                std::cout << buffer << '\n';
-            }
-        }
-    }*/
-    
 
     close(client);
     return 0;
