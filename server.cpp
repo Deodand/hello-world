@@ -12,6 +12,7 @@ int main(int argc, char* argv[]) {
     int portNum;
     int bufsize = 1024;
     char buffer[bufsize];
+    int optval = 1;
 
     if(argc > 1) 
         portNum = atoi(argv[1]);
@@ -36,11 +37,13 @@ int main(int argc, char* argv[]) {
     server_addr.sin_addr.s_addr = htons(INADDR_ANY);
     server_addr.sin_port = htons(portNum);
 
+    setsockopt(server, SOL_SOCKET, SO_REUSEADDR, &optval, sizeof(optval));
+
     std::cout << "Binding server...\n";
 
     if ((bind(server, (struct sockaddr*)&server_addr,sizeof(server_addr))) < 0) 
     {
-        std::cout << "Error binding connection...\n";
+        std::cerr << "Error binding connection...\n";
         return -1;
     }
 
@@ -50,12 +53,12 @@ int main(int argc, char* argv[]) {
     while(1) {
         std::cout << "Waiting clients...\n";
         ++clientNumber;
-        listen(server, 1);
+        listen(server, 10);
 
         client = accept(server,(struct sockaddr *)&server_addr, &sizeServerAddress);
 
         if (client < 0) {
-            std::cout << "Error accepting client " << clientNumber << "...\n";
+            std::cerr << "Error accepting client " << clientNumber << "...\n";
             return -1;
         }
         else
