@@ -5,12 +5,12 @@
 #include <map>
 
 
-
 namespace url {
-    std::string findInContainer(char);
-    std::string urlencode(std::string);
-    std::string urldecode(std::string);
+    char findStringInMap(const std::string &);
+    std::string urlencode(const std::string &);
+    std::string urldecode(const std::string &);
     const std::map<char, std::string> urlSymbolsContainer = {
+        { ' ', "%20"},
         { '!', "%21"},
         { '"', "%22"},
         { '#', "%23"},
@@ -32,8 +32,7 @@ namespace url {
         { '`', "%60"},
         { '{', "%7B"},
         { '|', "%7C"},
-        { '}', "%7D"},
-        { ' ', "%20"}
+        { '}', "%7D"}
     };
 }
 

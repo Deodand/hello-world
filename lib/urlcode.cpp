@@ -4,17 +4,8 @@
 
 
 namespace url {
-    std::string findInContainer(char charSymbol) {
-        for(auto it = urlSymbolsContainer.begin(); it != urlSymbolsContainer.end(); ++it) {
-            if(it->first == charSymbol) {
-                return it->second;
-            }
-        }
-        return "";
-    }
-
-    char findInContainer(std::string stringSymbol) {
-        for(auto it = urlSymbolsContainer.begin(); it != urlSymbolsContainer.end(); ++it) {
+    char findStringInMap(const std::string &stringSymbol) {
+        for(auto it = urlSymbolsContainer.cbegin(); it != urlSymbolsContainer.cend(); ++it) {
             if(it->second == stringSymbol) {
                 return it->first;
             }
@@ -22,25 +13,25 @@ namespace url {
         return ' ';
     }
 
-    std::string urlencode(std::string decodingString) {
+    std::string urlencode(const std::string &decodingString) {
         std::string finalString;
         for(int i=0; i != decodingString.length(); ++i) {
-            std::string temp;
-            if((temp = findInContainer(decodingString[i])) != "") {
-                finalString += temp;
+            auto temp = urlSymbolsContainer.find(decodingString[i]);
+            if(temp != urlSymbolsContainer.cend()) {
+                finalString += temp->second;
             }
             else {
-                finalString += std::string(1, decodingString[i]);
+                finalString.push_back(decodingString[i]);
             }
         }
         return finalString;
     }
 
-    std::string urldecode(std::string encodingString) {
+    std::string urldecode(const std::string &encodingString) {
         std::string finalString;
         for(int i=0; i != encodingString.length(); ++i) {
             if(encodingString[i] == '%') {
-                finalString += findInContainer(encodingString.substr(i, 3));
+                finalString.push_back(findStringInMap(encodingString.substr(i, 3)));
                 i += 2;
             }
             else {
