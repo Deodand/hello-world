@@ -11,8 +11,8 @@
 #include <thread>
 
 void reading(int client) {
-    int bufSize = 1024;
-    char buffer[bufSize];
+    int bufSize;
+    char buffer[1024];
     while(1) {
         memset(buffer, 0, sizeof(buffer));
         if((bufSize = read(client, buffer, 1024)) < 0) {
@@ -28,8 +28,8 @@ void reading(int client) {
     }
 }
 void writing(int client) {
-    int bufSize = 1024;
-    char buffer[bufSize];
+    int bufSize;
+    char buffer[1024];
     while(1) {
         memset(buffer, 0, sizeof(buffer));
         if((bufSize = read(STDIN_FILENO, buffer, 1024)) <= 0)
@@ -47,8 +47,6 @@ void writing(int client) {
 
 int main(int argc, char* argv[]) {
     int portNum;
-    int bufSize = 1024;
-    char buffer[bufSize];
     std::string buf;
 
     if(argc > 1) 

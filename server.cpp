@@ -8,34 +8,30 @@
 #include <unistd.h>
 #include <pthread.h>
 #include <fcntl.h>
+#include <vector>
 
 
 int main(int argc, char* argv[]) {
-    int server, client, clientNumber = 1;
+    int client, clientNumber = 1;
+    std::vector <std::string> nicknames;
+
     int portNum;
-    int bufSize = 1024;
-    char buffer[255];
-    std::string nicknames[128];
-
-    if(argc > 1) 
+    if(argc > 1) {
         portNum = atoi(argv[1]);
-    else
+    }
+    else {
         portNum = 15000;
+    }
 
-
-    struct sockaddr_in server_addr;
-    socklen_t sizeServerAddress;
-
-    server = socket(AF_INET, SOCK_STREAM, 0);
-
+    int server = socket(AF_INET, SOCK_STREAM, 0);
     if (server < 0) {
         std::cerr << "Error establishing socket...\n";
         exit(1);
     }
-
     std::cout << "Socket server using port " << portNum << " has been created.\n";
 
-
+    struct sockaddr_in server_addr;
+    socklen_t sizeServerAddress;
     server_addr.sin_family = AF_INET;
     server_addr.sin_port = htons(portNum);
     server_addr.sin_addr.s_addr = htons(INADDR_ANY);
@@ -94,11 +90,17 @@ int main(int argc, char* argv[]) {
                     if(client < 0) 
                         std::cerr << "Error accept()";
                     else {
-                        if(read(client, buffer, 1024) == -1) {
+                        char tempBuffer[1024];
+                        if(read(client, tempBuffer, 1024) == -1) {
                             std::cerr << "Error: read()\n";
                             continue;
                         }
-                        nicknames[client] = buffer;
+
+                        if(nicknames.size() <= client) {
+                            nicknames.resize(client);
+                        }
+                        nicknames.insert(nicknames.cbegin()+client,
+                                         std::string(tempBuffer));
                         
                         FD_SET(client, &master);
                         std::cout << "Client " << nicknames[client]
@@ -106,13 +108,13 @@ int main(int argc, char* argv[]) {
                         clientNumber++;
                         if(client > fdMax) 
                             fdMax = client;
-                            memset(buffer, 0, sizeof(buffer));
                     }
                 }
                 else {
                     // we have data from one of the clients
-                    memset(buffer, 0, sizeof(buffer));
-                    if((bufSize = read(i, buffer, 1024)) < 0) {
+                    char tempBuffer[1024] = {};
+                    int bufSize = read(i, tempBuffer, 1024);
+                    if(bufSize < 0) {
                         std::cerr << "Error read()";
                     }
                     else if(bufSize == 0) {
@@ -127,7 +129,7 @@ int main(int argc, char* argv[]) {
                             // send this message and nickname of sender to all clients
                             if(FD_ISSET(j, &master)) {
                                 if(j != server && j != i) {
-                                    std::string temp(buffer, sizeof(buffer));
+                                    std::string temp(tempBuffer);
                                     if(write(j, (nicknames[i]+": "+temp).c_str(),
                                              bufSize+sizeof(nicknames[i])+2) < 0)
                                         std::cerr << "Error write()";
